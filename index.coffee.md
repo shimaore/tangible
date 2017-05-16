@@ -77,7 +77,8 @@ tangile('Checking 1,2,3')
         event = "report_#{e}"
         _debug = Debug "#{name}:#{e}"
 
-        (text,arg,extra...) =>
+        (text,args...) =>
+          [arg,extra...] = args
 
           now = @session?.logger_stamp ? Now()
 
@@ -97,7 +98,7 @@ tangile('Checking 1,2,3')
 Debug
 
           if dev_logger
-            _debug "#{now} #{host} #{text}", arg, extra...
+            _debug "#{now} #{host} #{text}", args...
 
 Report via cuddly
 
