@@ -1,0 +1,5 @@
+coverage/
+node_modules/
+local-test/ccnq.key
+local-test/ccnq.crt
+local-test/ca.crt

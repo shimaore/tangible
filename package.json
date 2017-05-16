@@ -1,0 +1,35 @@
+{
+  "name": "tangible",
+  "version": "1.0.0",
+  "description": "logging for CCNQ",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "prepublish": "coffee -c *.coffee.md",
+    "pretest": "npm install",
+    "test": "mocha"
+  },
+  "author": "Stéphane Alnet <stephane@shimaore.net> (https://stephane.shimaore.net/)",
+  "license": "Unlicense",
+  "repository": {
+    "type": "git",
+    "url": "github.com/shimaore/tangible"
+  },
+  "keywords": [
+    "CCNQ",
+    "logger"
+  ],
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "coffee-coverage": "^2.0.1",
+    "coffee-script": "^1.12.6",
+    "mocha": "^3.4.1"
+  },
+  "dependencies": {
+    "socket.io-client": "^2.0.1",
+    "superagent": "^3.5.2",
+    "uuid": "^3.0.1"
+  }
+}
