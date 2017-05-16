@@ -43,15 +43,14 @@
       default_room: 'support'
     });
     socket.on('tangible:dev_logger', function(enabled) {
-      var dev_logger;
-      return dev_logger = enabled;
+      return logger.set_dev_logger(enabled);
     });
     socket.emit('register', {
       event: 'tangile:enable',
       default_room: 'support'
     });
     socket.on('tangible:enable', function(namespaces) {
-      return logger.Debug.enable(namespaces);
+      return logger.enable(namespaces);
     });
     return non_call_logger.call(this, 'notify');
   };

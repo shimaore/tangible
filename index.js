@@ -85,6 +85,11 @@
           if (extra.length > 0) {
             data.extra = extra;
           }
+          if (e === 'trace') {
+            if (!dev_logger) {
+              return;
+            }
+          }
           if (dev_logger) {
             _debug.apply(null, [now + " " + host + " " + text].concat(slice.call(args)));
           }
@@ -154,7 +159,11 @@
     }
   };
 
-  module.exports.Debug = Debug;
+  module.exports.enable = Debug.enable;
+
+  module.exports.set_dev_logger = function(value) {
+    return dev_logger = value;
+  };
 
   module.exports.default_host = default_host;
 
