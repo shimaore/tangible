@@ -64,8 +64,9 @@ tangile('Checking 1,2,3')
       for k,n of map when n of process.env
         gelf_config[k] = fs.readFileSync process.env[n]
 
-    dev_logger = false
+    dev_logger = true
     dev_logger = true if process.env.DEV_LOGGER is 'true'
+    dev_logger = false if process.env.DEV_LOGGER is 'false'
 
     Now = -> new Date().toJSON()
 
@@ -211,4 +212,4 @@ This is called once per incoming call.
 
 * session._id (string) A unique identifier for this session/call.
 
-      @debug = non_call_logger.call this, null, @session
+      non_call_logger.call this, null, @session
