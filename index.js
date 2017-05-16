@@ -44,10 +44,14 @@
     }
   }
 
-  dev_logger = false;
+  dev_logger = true;
 
   if (process.env.DEV_LOGGER === 'true') {
     dev_logger = true;
+  }
+
+  if (process.env.DEV_LOGGER === 'false') {
+    dev_logger = false;
   }
 
   Now = function() {
@@ -208,7 +212,7 @@
     this.session.logger_uuid = uuid;
     id = [host, now, uuid].join('-');
     this.session._id = id;
-    return this.debug = non_call_logger.call(this, null, this.session);
+    return non_call_logger.call(this, null, this.session);
   };
 
 }).call(this);
