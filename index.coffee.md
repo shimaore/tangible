@@ -156,7 +156,7 @@ This module can be used as middleware for thinkable-ducks.
 
 These are called only once per process.
 
-    module.exports.init = (cfg) ->
+    module.exports.init = init = (cfg) ->
       cuddly_url = cfg.cuddly_url if cfg.cuddly_url?
       dev_logger = cfg.dev_logger if cfg.dev_logger?
       gelf_config = cfg.gelf if cfg.gelf?
