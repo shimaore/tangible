@@ -145,16 +145,7 @@ and inject `@debug.dev`, `@debug.ops`, `@debug.csr`.
         debug[e] = make_debug e
       debug
 
-Middleware
-==========
-
-This module can be used as middleware for thinkable-ducks.
-
-    module.exports.name = "tangible"
-
-These are called only once per process.
-
-    module.exports.init = init = (cfg) ->
+    module.exports.init = (cfg) ->
       cuddly_url = cfg.cuddly_url if cfg.cuddly_url?
       dev_logger = cfg.dev_logger if cfg.dev_logger?
       gelf_config = cfg.gelf if cfg.gelf?
@@ -162,51 +153,4 @@ These are called only once per process.
 
       cuddly_io ?= IO cuddly_url if cuddly_url?
 
-    non_call_logger = (suffix,session) ->
-
-      name = @__middleware_name
-      name += ":#{suffix}" if suffix?
-
-      @debug = logger name, session
-
-    module.exports.config = ->
-      init @cfg
-      non_call_logger.call this, 'config'
-
-    module.exports.server_pre = ->
-      init @cfg
-      non_call_logger.call this, 'server_pre'
-
-    module.exports.web = ->
-      # FIXME statistics
-      non_call_logger.call this, 'web'
-
-    module.exports.notify = ({socket}) ->
-      socket.emit 'register', event:'tangile:dev_logger', default_room:'support'
-      socket.on 'tangible:dev_logger', (enabled) ->
-        dev_logger = enabled
-
-      socket.emit 'register', event:'tangile:enable', default_room:'support'
-      socket.on 'tangible:enable', (namespaces) ->
-        Debug.enable namespaces
-      non_call_logger.call this, 'notify'
-
-This is called once per incoming call.
-
-    uuidV4 = require 'uuid/v4'
-
-    module.exports.include = ->
-
-      now = Now()
-      uuid = uuidV4()
-
-      host = @cfg.host ? default_host
-      @session.logger_stamp = now
-      @session.logger_host = host
-      @session.logger_uuid = uuid
-      id = [host,now,uuid].join '-'
-      @session._id = id
-
-* session._id (string) A unique identifier for this session/call.
-
-      non_call_logger.call this, null, @session
+    module.exports.Debug = Debug

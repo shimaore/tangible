@@ -5,8 +5,9 @@
 
       it 'should enable dynamically', ->
         tangible = require '..'
+        mw = require '../middleware'
 
-        tangible.notify socket:
+        mw.notify socket:
           emit: ->
           on: (e,cb) ->
             switch e
@@ -17,3 +18,9 @@
 
         debug = tangible 'foo'
         debug 'It should log.'
+
+      it 'should have a name', ->
+        tangible = require '..'
+
+        unless 'name' of tangible
+          throw new Errror 'missing @name'
