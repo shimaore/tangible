@@ -156,4 +156,6 @@
 
   module.exports.Debug = Debug;
 
+  module.exports.default_host = default_host;
+
 }).call(this);
