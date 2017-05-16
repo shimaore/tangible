@@ -117,8 +117,9 @@ Report via gelf
 
             if data.data?
               message._data     = data.data
-              for own k,v of message._data when k.match /^[\w-]+$/
-                message["_#{k}"] = v
+              if typeof message._data is 'object' and not message._data.length?
+                for own k,v of message._data when k.match /^[\w-]+$/
+                  message["_#{k}"] = v
             message._extra    = data.extra    if data.extra?
             message._session  = data.session  if data.session?
 
