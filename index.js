@@ -101,12 +101,14 @@
             };
             if (data.data != null) {
               message._data = data.data;
-              ref7 = message._data;
-              for (k in ref7) {
-                if (!hasProp.call(ref7, k)) continue;
-                v = ref7[k];
-                if (k.match(/^[\w-]+$/)) {
-                  message["_" + k] = v;
+              if (typeof message._data === 'object' && (message._data.length == null)) {
+                ref7 = message._data;
+                for (k in ref7) {
+                  if (!hasProp.call(ref7, k)) continue;
+                  v = ref7[k];
+                  if (k.match(/^[\w-]+$/)) {
+                    message["_" + k] = v;
+                  }
                 }
               }
             }
