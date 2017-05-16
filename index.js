@@ -66,8 +66,9 @@
         event = "report_" + e;
         _debug = Debug(name + ":" + e);
         return function() {
-          var arg, data, extra, host, message, now, ref1, ref2, ref3, ref4, ref5, ref6, ref7, text, v;
-          text = arguments[0], arg = arguments[1], extra = 3 <= arguments.length ? slice.call(arguments, 2) : [];
+          var arg, args, data, extra, host, message, now, ref1, ref2, ref3, ref4, ref5, ref6, ref7, text, v;
+          text = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+          arg = args[0], extra = 2 <= args.length ? slice.call(args, 1) : [];
           now = (ref1 = (ref2 = _this.session) != null ? ref2.logger_stamp : void 0) != null ? ref1 : Now();
           host = (ref3 = (ref4 = _this.session) != null ? ref4.logger_host : void 0) != null ? ref3 : default_host;
           data = {
@@ -85,7 +86,7 @@
             data.extra = extra;
           }
           if (dev_logger) {
-            _debug.apply(null, [now + " " + host + " " + text, arg].concat(slice.call(extra)));
+            _debug.apply(null, [now + " " + host + " " + text].concat(slice.call(args)));
           }
           if ((cuddly_io != null) && indexOf.call(events, e) >= 0) {
             cuddly_io.emit(event, data);
