@@ -92,7 +92,6 @@
             cuddly_io.emit(event, data);
           }
           if (gelf_config != null) {
-            __debug('gelf_config', gelf_config);
             message = {
               host: data.host,
               short_message: data.msg,
@@ -117,12 +116,9 @@
             if (data.session != null) {
               message._session = data.session;
             }
-            __debug('Going to GELF', message);
             request.post(gelf_config.url).ca(gelf_config.ca).cert(gelf_config.cert).key(gelf_config.key).send(message).end(function(err, res) {
               if (err || !res.ok) {
                 return __debug('Error', err);
-              } else {
-                return __debug('Response', res.status, res.text);
               }
             });
           }
