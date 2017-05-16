@@ -1,5 +1,7 @@
     logger = require './index'
 
+    Now = -> new Date().toJSON()
+
 Middleware
 ==========
 
@@ -49,7 +51,7 @@ This is called once per incoming call.
       now = Now()
       uuid = uuidV4()
 
-      host = @cfg.host ? default_host
+      host = @cfg.host ? logger.default_host
       @session.logger_stamp = now
       @session.logger_host = host
       @session.logger_uuid = uuid

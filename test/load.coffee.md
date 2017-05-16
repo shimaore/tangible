@@ -24,3 +24,16 @@
 
         unless 'name' of tangible
           throw new Errror 'missing @name'
+
+      it 'should server_pre' , ->
+        mw = require '../middleware'
+        ctx =
+          cfg: {}
+        mw.server_pre.call ctx, ctx
+
+      it 'should include', ->
+        mw = require '../middleware'
+        ctx =
+          cfg: {}
+          session: {}
+        mw.include.call ctx, ctx

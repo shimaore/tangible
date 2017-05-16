@@ -154,3 +154,4 @@ and inject `@debug.dev`, `@debug.ops`, `@debug.csr`.
       cuddly_io ?= IO cuddly_url if cuddly_url?
 
     module.exports.Debug = Debug
+    module.exports.default_host = default_host
