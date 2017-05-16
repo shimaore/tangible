@@ -108,7 +108,6 @@ Report via cuddly
 Report via gelf
 
           if gelf_config?
-            __debug 'gelf_config', gelf_config
             message =
               host: data.host
               short_message: data.msg
@@ -123,8 +122,6 @@ Report via gelf
             message._extra    = data.extra    if data.extra?
             message._session  = data.session  if data.session?
 
-            __debug 'Going to GELF', message
-
             request
             .post gelf_config.url
             .ca gelf_config.ca
@@ -134,8 +131,6 @@ Report via gelf
             .end (err,res) ->
               if err or not res.ok
                 __debug 'Error', err
-              else
-                __debug 'Response', res.status, res.text
 
           return
 
