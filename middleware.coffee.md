@@ -35,11 +35,11 @@ These are called only once per process.
     @notify = ({socket}) ->
       socket.emit 'register', event:'tangile:dev_logger', default_room:'support'
       socket.on 'tangible:dev_logger', (enabled) ->
-        dev_logger = enabled
+        logger.set_dev_logger enabled
 
       socket.emit 'register', event:'tangile:enable', default_room:'support'
       socket.on 'tangible:enable', (namespaces) ->
-        logger.Debug.enable namespaces
+        logger.enable namespaces
       non_call_logger.call this, 'notify'
 
 This is called once per incoming call.

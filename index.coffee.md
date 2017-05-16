@@ -43,7 +43,6 @@ Developper low-level messages, normally not enabled.
 tangile('Checking 1,2,3')
 ```
 
-
     events = ['dev','ops','csr']
 
     os = require 'os'
@@ -96,6 +95,9 @@ tangile('Checking 1,2,3')
           data.extra = extra if extra.length > 0
 
 Debug
+
+          if e is 'trace'
+            return unless dev_logger
 
           if dev_logger
             _debug "#{now} #{host} #{text}", args...
@@ -153,5 +155,7 @@ and inject `@debug.dev`, `@debug.ops`, `@debug.csr`.
 
       cuddly_io ?= IO cuddly_url if cuddly_url?
 
-    module.exports.Debug = Debug
+    module.exports.enable = Debug.enable
+    module.exports.set_dev_logger = (value) ->
+      dev_logger = value
     module.exports.default_host = default_host
