@@ -44,7 +44,7 @@
     }
   }
 
-  dev_logger = true;
+  dev_logger = process.env.NODE_ENV !== 'production';
 
   if (process.env.DEV_LOGGER === 'true') {
     dev_logger = true;

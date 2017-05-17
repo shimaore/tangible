@@ -39,14 +39,14 @@
     var socket;
     socket = arg.socket;
     socket.emit('register', {
-      event: 'tangile:dev_logger',
+      event: 'tangible:dev_logger',
       default_room: 'support'
     });
     socket.on('tangible:dev_logger', function(enabled) {
       return logger.set_dev_logger(enabled);
     });
     socket.emit('register', {
-      event: 'tangile:enable',
+      event: 'tangible:enable',
       default_room: 'support'
     });
     socket.on('tangible:enable', function(namespaces) {
