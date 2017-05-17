@@ -63,8 +63,8 @@ tangile('Checking 1,2,3')
       for k,n of map when n of process.env
         gelf_config[k] = fs.readFileSync process.env[n]
 
-    dev_logger = true
-    dev_logger = true if process.env.DEV_LOGGER is 'true'
+    dev_logger = process.env.NODE_ENV isnt 'production'
+    dev_logger = true  if process.env.DEV_LOGGER is 'true'
     dev_logger = false if process.env.DEV_LOGGER is 'false'
 
     Now = -> new Date().toJSON()
