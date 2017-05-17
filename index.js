@@ -58,16 +58,19 @@
     return new Date().toJSON();
   };
 
-  module.exports = logger = function(name, session) {
+  module.exports = logger = function(name) {
     var debug, make_debug;
     make_debug = (function(_this) {
       return function(e) {
         var _debug, event, local_debug, local_name;
         event = "report_" + e;
-        _debug = Debug(name + ":" + e);
-        local_name = local_debug = null;
+        if (name != null) {
+          _debug = Debug(name + ":" + e);
+        } else {
+          local_name = local_debug = null;
+        }
         return function() {
-          var arg, args, data, extra, host, message, now, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, session_logger, text, v;
+          var arg, args, data, extra, host, message, now, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, session_logger, text, v;
           text = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
           arg = args[0], extra = 2 <= args.length ? slice.call(args, 1) : [];
           now = (ref1 = (ref2 = _this.session) != null ? ref2.logger_stamp : void 0) != null ? ref1 : Now();
@@ -86,7 +89,7 @@
           if (extra.length > 0) {
             data.extra = extra;
           }
-          session_logger = session != null ? session.dev_logger : void 0;
+          session_logger = (ref7 = _this.session) != null ? ref7.dev_logger : void 0;
           if (e === 'trace') {
             if (!(dev_logger || session_logger)) {
               return;
@@ -98,7 +101,7 @@
               _debug.apply(null, [message].concat(slice.call(args)));
             } else {
               if (local_name !== _this.__middleware_name) {
-                local_name = (ref7 = _this.__middleware_name) != null ? ref7 : '(no name)';
+                local_name = (ref8 = _this.__middleware_name) != null ? ref8 : '(no name)';
                 local_debug = Debug(local_name + ":" + e);
               }
               if (typeof local_debug === "function") {
@@ -120,10 +123,10 @@
             if (data.data != null) {
               message._data = data.data;
               if (typeof message._data === 'object' && (message._data.length == null)) {
-                ref8 = message._data;
-                for (k in ref8) {
-                  if (!hasProp.call(ref8, k)) continue;
-                  v = ref8[k];
+                ref9 = message._data;
+                for (k in ref9) {
+                  if (!hasProp.call(ref9, k)) continue;
+                  v = ref9[k];
                   if (k.match(/^[\w-]+$/)) {
                     message["_" + k] = v;
                   }
