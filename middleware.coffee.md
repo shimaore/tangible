@@ -61,4 +61,4 @@ This is called once per incoming call.
 
 * session._id (string) A unique identifier for this session/call.
 
-      logger.call this, null
+      @debug = logger.call this, null
