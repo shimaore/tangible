@@ -13,12 +13,15 @@ These are called only once per process.
 
     @init = init = logger.init
 
-    non_call_logger = (suffix,session) ->
+    non_call_logger = (suffix) ->
 
       name = @__middleware_name
       name += ":#{suffix}" if suffix?
 
-      @debug = logger name, session
+      @debug = logger name, null
+
+    call_logger = (session) ->
+      @debug = logger null, session
 
     @config = ->
       init @cfg
@@ -60,4 +63,4 @@ This is called once per incoming call.
 
 * session._id (string) A unique identifier for this session/call.
 
-      non_call_logger.call this, null, @session
+      call_logger.call this, @session

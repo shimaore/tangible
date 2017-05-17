@@ -78,6 +78,8 @@ tangile('Checking 1,2,3')
         event = "report_#{e}"
         _debug = Debug "#{name}:#{e}"
 
+        local_name = local_debug = null
+
         (text,args...) =>
           [arg,extra...] = args
 
@@ -104,7 +106,14 @@ Debug
             return unless dev_logger or session_logger
 
           if dev_logger or session_logger
-            _debug "#{now} #{host} #{text}", args...
+            message = "#{now} #{host} #{text}"
+            if name?
+              _debug message, args...
+            else
+              if local_name isnt @__middleware_name
+                local_name = @__middleware_name ? '(no name)'
+                local_debug = Debug "#{local_name}:#{e}"
+              local_debug? message, args...
 
 Report via cuddly
 
