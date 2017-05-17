@@ -59,7 +59,8 @@
   };
 
   module.exports = logger = function(name, session) {
-    var debug, make_debug;
+    var debug, make_debug, session_logger;
+    session_logger = session != null ? session.dev_logger : void 0;
     make_debug = (function(_this) {
       return function(e) {
         var _debug, event;
@@ -86,11 +87,11 @@
             data.extra = extra;
           }
           if (e === 'trace') {
-            if (!dev_logger) {
+            if (!(dev_logger || session_logger)) {
               return;
             }
           }
-          if (dev_logger) {
+          if (dev_logger || session_logger) {
             _debug.apply(null, [now + " " + host + " " + text].concat(slice.call(args)));
           }
           if ((cuddly_io != null) && indexOf.call(events, e) >= 0) {
