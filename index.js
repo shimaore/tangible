@@ -62,11 +62,12 @@
     var debug, make_debug;
     make_debug = (function(_this) {
       return function(e) {
-        var _debug, event;
+        var _debug, event, local_debug, local_name;
         event = "report_" + e;
         _debug = Debug(name + ":" + e);
+        local_name = local_debug = null;
         return function() {
-          var arg, args, data, extra, host, message, now, ref1, ref2, ref3, ref4, ref5, ref6, ref7, session_logger, text, v;
+          var arg, args, data, extra, host, message, now, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, session_logger, text, v;
           text = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
           arg = args[0], extra = 2 <= args.length ? slice.call(args, 1) : [];
           now = (ref1 = (ref2 = _this.session) != null ? ref2.logger_stamp : void 0) != null ? ref1 : Now();
@@ -92,7 +93,18 @@
             }
           }
           if (dev_logger || session_logger) {
-            _debug.apply(null, [now + " " + host + " " + text].concat(slice.call(args)));
+            message = now + " " + host + " " + text;
+            if (name != null) {
+              _debug.apply(null, [message].concat(slice.call(args)));
+            } else {
+              if (local_name !== _this.__middleware_name) {
+                local_name = (ref7 = _this.__middleware_name) != null ? ref7 : '(no name)';
+                local_debug = Debug(local_name + ":" + e);
+              }
+              if (typeof local_debug === "function") {
+                local_debug.apply(null, [message].concat(slice.call(args)));
+              }
+            }
           }
           if ((cuddly_io != null) && indexOf.call(events, e) >= 0) {
             cuddly_io.emit(event, data);
@@ -108,10 +120,10 @@
             if (data.data != null) {
               message._data = data.data;
               if (typeof message._data === 'object' && (message._data.length == null)) {
-                ref7 = message._data;
-                for (k in ref7) {
-                  if (!hasProp.call(ref7, k)) continue;
-                  v = ref7[k];
+                ref8 = message._data;
+                for (k in ref8) {
+                  if (!hasProp.call(ref8, k)) continue;
+                  v = ref8[k];
                   if (k.match(/^[\w-]+$/)) {
                     message["_" + k] = v;
                   }
