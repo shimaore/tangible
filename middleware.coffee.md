@@ -15,13 +15,10 @@ These are called only once per process.
 
     non_call_logger = (suffix) ->
 
-      name = @__middleware_name
+      name = @__middleware_name ? '(no name)'
       name += ":#{suffix}" if suffix?
 
-      @debug = logger name, null
-
-    call_logger = (session) ->
-      @debug = logger null, session
+      @debug = logger name
 
     @config = ->
       init @cfg
@@ -43,6 +40,7 @@ These are called only once per process.
       socket.emit 'register', event:'tangible:enable', default_room:'support'
       socket.on 'tangible:enable', (namespaces) ->
         logger.enable namespaces
+
       non_call_logger.call this, 'notify'
 
 This is called once per incoming call.
@@ -63,4 +61,4 @@ This is called once per incoming call.
 
 * session._id (string) A unique identifier for this session/call.
 
-      call_logger.call this, @session
+      logger.call this, null

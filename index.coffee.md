@@ -69,16 +69,17 @@ tangile('Checking 1,2,3')
 
     Now = -> new Date().toJSON()
 
-    module.exports = logger = (name,session) ->
+    module.exports = logger = (name) ->
 
 * session.dev_logger (boolean) whether to trace for this session
 
       make_debug = (e) =>
 
         event = "report_#{e}"
-        _debug = Debug "#{name}:#{e}"
-
-        local_name = local_debug = null
+        if name?
+          _debug = Debug "#{name}:#{e}"
+        else
+          local_name = local_debug = null
 
         (text,args...) =>
           [arg,extra...] = args
@@ -100,7 +101,7 @@ tangile('Checking 1,2,3')
 
 Debug
 
-          session_logger = session?.dev_logger
+          session_logger = @session?.dev_logger
 
           if e is 'trace'
             return unless dev_logger or session_logger
