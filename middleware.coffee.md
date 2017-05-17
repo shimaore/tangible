@@ -33,11 +33,11 @@ These are called only once per process.
       non_call_logger.call this, 'web'
 
     @notify = ({socket}) ->
-      socket.emit 'register', event:'tangile:dev_logger', default_room:'support'
+      socket.emit 'register', event:'tangible:dev_logger', default_room:'support'
       socket.on 'tangible:dev_logger', (enabled) ->
         logger.set_dev_logger enabled
 
-      socket.emit 'register', event:'tangile:enable', default_room:'support'
+      socket.emit 'register', event:'tangible:enable', default_room:'support'
       socket.on 'tangible:enable', (namespaces) ->
         logger.enable namespaces
       non_call_logger.call this, 'notify'
