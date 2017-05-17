@@ -67,7 +67,7 @@
     this.session.logger_uuid = uuid;
     id = [host, now, uuid].join('-');
     this.session._id = id;
-    return logger.call(this, null);
+    return this.debug = logger.call(this, null);
   };
 
 }).call(this);
