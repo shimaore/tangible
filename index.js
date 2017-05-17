@@ -59,15 +59,14 @@
   };
 
   module.exports = logger = function(name, session) {
-    var debug, make_debug, session_logger;
-    session_logger = session != null ? session.dev_logger : void 0;
+    var debug, make_debug;
     make_debug = (function(_this) {
       return function(e) {
         var _debug, event;
         event = "report_" + e;
         _debug = Debug(name + ":" + e);
         return function() {
-          var arg, args, data, extra, host, message, now, ref1, ref2, ref3, ref4, ref5, ref6, ref7, text, v;
+          var arg, args, data, extra, host, message, now, ref1, ref2, ref3, ref4, ref5, ref6, ref7, session_logger, text, v;
           text = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
           arg = args[0], extra = 2 <= args.length ? slice.call(args, 1) : [];
           now = (ref1 = (ref2 = _this.session) != null ? ref2.logger_stamp : void 0) != null ? ref1 : Now();
@@ -86,6 +85,7 @@
           if (extra.length > 0) {
             data.extra = extra;
           }
+          session_logger = session != null ? session.dev_logger : void 0;
           if (e === 'trace') {
             if (!(dev_logger || session_logger)) {
               return;
