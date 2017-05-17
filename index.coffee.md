@@ -73,8 +73,6 @@ tangile('Checking 1,2,3')
 
 * session.dev_logger (boolean) whether to trace for this session
 
-      session_logger = session?.dev_logger
-
       make_debug = (e) =>
 
         event = "report_#{e}"
@@ -99,6 +97,8 @@ tangile('Checking 1,2,3')
           data.extra = extra if extra.length > 0
 
 Debug
+
+          session_logger = session?.dev_logger
 
           if e is 'trace'
             return unless dev_logger or session_logger
