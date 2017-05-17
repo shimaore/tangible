@@ -71,6 +71,10 @@ tangile('Checking 1,2,3')
 
     module.exports = logger = (name,session) ->
 
+* session.dev_logger (boolean) whether to trace for this session
+
+      session_logger = session?.dev_logger
+
       make_debug = (e) =>
 
         event = "report_#{e}"
@@ -97,9 +101,9 @@ tangile('Checking 1,2,3')
 Debug
 
           if e is 'trace'
-            return unless dev_logger
+            return unless dev_logger or session_logger
 
-          if dev_logger
+          if dev_logger or session_logger
             _debug "#{now} #{host} #{text}", args...
 
 Report via cuddly
