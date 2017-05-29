@@ -143,7 +143,7 @@ Report via gelf
               short_message: data.msg
               facility: data.event
               _stamp: data.stamp
-              _application: data.application
+              _application_name: data.application
 
             if data.data?
               message._data     = data.data
