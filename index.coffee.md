@@ -4,6 +4,7 @@ We support logging using debug (console), socket.io (our own), or GELF over TLS.
     IO = require 'socket.io-client'
     request = require 'superagent'
     __debug = Debug 'tangible'
+    util = require 'util'
 
 Same semantics as in `cuddly`:
 
@@ -96,8 +97,21 @@ tangile('Checking 1,2,3')
             event: e
             msg: text
 
-          data.data = arg if arg?
-          data.extra = extra if extra.length > 0
+          if arg?
+            try
+              JSON.stringify arg
+              data.data = arg
+            catch error
+              data.data_error = true
+              data.data = util.inspect arg
+
+          if extra.length > 0
+            try
+              JSON.stringify extra
+              data.extra = extra
+            catch error
+              data.extra_error = true
+              data.extra = util.inspect extra
 
 Debug
 

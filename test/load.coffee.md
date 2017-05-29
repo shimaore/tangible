@@ -37,3 +37,8 @@
           cfg: {}
           session: {}
         mw.include.call ctx, ctx
+
+      it 'should accept weird data', ->
+        Debug = require '..'
+        debug = Debug 'test-debug'
+        debug 'hello world', (new Buffer 'weird'), (new Buffer 'weirder'), (new Buffer ('weirderer\0x00'))
