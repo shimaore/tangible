@@ -176,10 +176,21 @@
         return debug[e] = make_debug(e);
       };
     })(this));
+    debug.inspect = util.inspect;
+    debug.error = function(msg, error) {
+      var ref1;
+      return debug.dev(msg + ": " + ((ref1 = error.stack) != null ? ref1 : debug.inspect(error)));
+    };
+    debug["catch"] = function(msg) {
+      return function(error) {
+        return debug.error(msg, error);
+      };
+    };
     return debug;
   };
 
   module.exports.init = function(cfg) {
+    var process_logger;
     if (cfg.cuddly_url != null) {
       cuddly_url = cfg.cuddly_url;
     }
@@ -193,8 +204,18 @@
       default_host = cfg.host;
     }
     if (cuddly_url != null) {
-      return cuddly_io != null ? cuddly_io : cuddly_io = IO(cuddly_url);
+      if (cuddly_io == null) {
+        cuddly_io = IO(cuddly_url);
+      }
     }
+    process_logger = logger('process');
+    process.on('uncaughtException', function(error) {
+      process_logger.error('uncaughtException', error);
+      throw error;
+    });
+    return process.on('unhandledRejection', function(reason, p) {
+      return process_logger.error("unhandledRejection on " + (util.inspect(p)), reason);
+    });
   };
 
   module.exports.enable = Debug.enable;
