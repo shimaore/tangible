@@ -42,3 +42,7 @@
         Debug = require '..'
         debug = Debug 'test-debug'
         debug 'hello world', (new Buffer 'weird'), (new Buffer 'weirder'), (new Buffer ('weirderer\0x00'))
+
+      it 'should log unhandled rejection', ->
+        Promise.reject new Error 'on purpose'
+        return

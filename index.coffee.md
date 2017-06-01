@@ -175,6 +175,18 @@ and inject `@debug.dev`, `@debug.ops`, `@debug.csr`.
 
       events.forEach (e) =>
         debug[e] = make_debug e
+
+and inject `@debug.catch`
+
+      debug.inspect = util.inspect
+
+      debug.error = (msg,error) ->
+        debug.dev "#{msg}: #{error.stack ? debug.inspect error}"
+
+      debug.catch = (msg) ->
+        (error) ->
+          debug.error msg, error
+
       debug
 
     module.exports.init = (cfg) ->
@@ -184,6 +196,15 @@ and inject `@debug.dev`, `@debug.ops`, `@debug.csr`.
       default_host = cfg.host if cfg.host?
 
       cuddly_io ?= IO cuddly_url if cuddly_url?
+
+      process_logger = logger 'process'
+      process.on 'uncaughtException', (error) ->
+        process_logger.error 'uncaughtException', error
+        throw error
+
+      process.on 'unhandledRejection', (reason,p) ->
+        process_logger.error "unhandledRejection on #{util.inspect p}", reason
+        # throw reason
 
     module.exports.enable = Debug.enable
     module.exports.set_dev_logger = (value) ->
