@@ -134,7 +134,7 @@
               short_message: data.msg,
               facility: data.event,
               _stamp: data.stamp,
-              _application: data.application
+              _application_name: data.application
             };
             if (data.data != null) {
               message._data = data.data;
@@ -154,6 +154,12 @@
             }
             if (data.session != null) {
               message._session = data.session;
+            }
+            if (data.data_error != null) {
+              message._data_error = data.data_error;
+            }
+            if (data.extra_error != null) {
+              message._extra_error = data.extra_error;
             }
             request.post(gelf_config.url).ca(gelf_config.ca).cert(gelf_config.cert).key(gelf_config.key).send(message).end(function(err, res) {
               if (err || !res.ok) {
