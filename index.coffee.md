@@ -152,6 +152,8 @@ Report via gelf
                   message["_#{k}"] = v
             message._extra    = data.extra    if data.extra?
             message._session  = data.session  if data.session?
+            message._data_error  = data.data_error  if data.data_error?
+            message._extra_error = data.extra_error if data.extra_error?
 
             request
             .post gelf_config.url
