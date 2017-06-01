@@ -189,6 +189,8 @@ and inject `@debug.catch`
 
       debug
 
+    process_logger = null
+
     module.exports.init = (cfg) ->
       cuddly_url = cfg.cuddly_url if cfg.cuddly_url?
       dev_logger = cfg.dev_logger if cfg.dev_logger?
@@ -197,7 +199,8 @@ and inject `@debug.catch`
 
       cuddly_io ?= IO cuddly_url if cuddly_url?
 
-      process_logger = logger 'process'
+      return if process_logger?
+      process_logger ?= logger 'process'
       process.on 'uncaughtException', (error) ->
         process_logger.error 'uncaughtException', error
         throw error
@@ -205,6 +208,8 @@ and inject `@debug.catch`
       process.on 'unhandledRejection', (reason,p) ->
         process_logger.error "unhandledRejection on #{util.inspect p}", reason
         # throw reason
+
+      return
 
     module.exports.enable = Debug.enable
     module.exports.set_dev_logger = (value) ->
