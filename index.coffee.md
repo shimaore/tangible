@@ -117,9 +117,6 @@ Debug
 
           session_logger = @session?.dev_logger
 
-          if e is 'trace'
-            return unless dev_logger or session_logger
-
           if dev_logger or session_logger
             message = "#{now} #{host} #{text}"
             if name?
@@ -129,6 +126,10 @@ Debug
                 local_name = @__middleware_name ? '(no name)'
                 local_debug = Debug "#{local_name}:#{e}"
               local_debug? message, args...
+
+Never do low-level traces over the network.
+
+          return if e is 'trace'
 
 Report via cuddly
 
