@@ -1,4 +1,10 @@
     logger = require './index'
+    .use require './cuddly'
+    .use require './gelf'
+    .use require './redis'
+    .use require './net'
+
+    repl = require './repl'
 
     Now = -> new Date().toJSON()
 
@@ -11,26 +17,22 @@ This module can be used as middleware for thinkable-ducks.
 
 These are called only once per process.
 
-    @init = init = logger.init
-
-    non_call_logger = (suffix) ->
-
-      name = @__middleware_name ? '(no name)'
-      name += ":#{suffix}" if suffix?
-
-      @debug = logger name
+    init = (cfg) ->
+      logger.set_dev_logger cfg.dev_logger if cfg.dev_logger?
+      logger.default_host = cfg.host if cfg.host?
 
     @config = ->
       init @cfg
-      non_call_logger.call this, 'config'
+      @debug = logger null, 'config'
 
     @server_pre = ->
       init @cfg
-      non_call_logger.call this, 'server_pre'
+      logger.use repl this
+      @debug = logger null, 'server_pre'
 
     @web = ->
       # FIXME statistics
-      non_call_logger.call this, 'web'
+      @debug = logger null, 'web'
 
     @notify = ({socket}) ->
       socket.emit 'register', event:'tangible:dev_logger', default_room:'support'
@@ -41,7 +43,7 @@ These are called only once per process.
       socket.on 'tangible:enable', (namespaces) ->
         logger.enable namespaces
 
-      non_call_logger.call this, 'notify'
+      @debug = logger null, 'notify'
 
 This is called once per incoming call.
 
@@ -61,4 +63,4 @@ This is called once per incoming call.
 
 * session._id (string) A unique identifier for this session/call.
 
-      @debug = logger.call this, null
+      @debug = logger.call this

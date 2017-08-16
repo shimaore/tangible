@@ -28,8 +28,11 @@
     "mocha": "^3.4.2"
   },
   "dependencies": {
-    "socket.io-client": "^2.0.1",
+    "debug": "^3.0.0",
+    "ioredis": "^3.1.4",
+    "notepack.io": "^2.1.1",
+    "socket.io-client": "^2.0.3",
     "superagent": "^3.5.2",
-    "uuid": "^3.0.1"
+    "uuid": "^3.1.0"
   }
 }

@@ -1,7 +1,12 @@
     describe 'The module', ->
       it 'should load', ->
         require '..'
-
+        require '../cuddly'
+        require '../gelf'
+        require '../middleware'
+        require '../net'
+        require '../redis'
+        require '../repl'
 
       it 'should enable dynamically', ->
         tangible = require '..'

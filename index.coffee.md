@@ -1,68 +1,17 @@
 We support logging using debug (console), socket.io (our own), or GELF over TLS.
 
     Debug = require 'debug'
-    IO = require 'socket.io-client'
-    request = require 'superagent'
     __debug = Debug 'tangible'
     util = require 'util'
 
-Same semantics as in `cuddly`:
+    EventEmitter = require 'events'
 
-Development/devops support messages
------------------------------------
-
-Indicate potential bug, internal inconsistency, or non-transient deployment problem.
-
-```
-tangible.dev('Expected the candy type to be set in GrabCandy().')
-```
-
-Operational support messages
-----------------------------
-
-Indicate non-customer-specific operational (transient) problem.
-
-```
-tangible.ops('The candy server is not reachable.')
-```
-
-Customer support messages
--------------------------
-
-Indicate customer-specific problem (e.g. configuration entry).
-
-```
-tangile.csr('Customer Bar is out of candies.')
-```
-
-Debug megssages
----------------
-
-Developper low-level messages, normally not enabled.
-
-```
-tangile('Checking 1,2,3')
-```
+    w = new EventEmitter()
 
     events = ['dev','ops','csr']
 
     os = require 'os'
-    fs = require 'fs'
     default_host = process.env.CUDDLY_HOST ? os.hostname()
-
-    cuddly_url = process.env.CUDDLY_URL
-    cuddly_io = null
-
-    gelf_config = null
-    if process.env.GELF_URL?
-      map =
-        key: 'GELF_KEY'
-        cert: 'GELF_CERT'
-        ca: 'GELF_CA'
-      gelf_config =
-        url: process.env.GELF_URL
-      for k,n of map when n of process.env
-        gelf_config[k] = fs.readFileSync process.env[n]
 
     dev_logger = process.env.NODE_ENV isnt 'production'
     dev_logger = true  if process.env.DEV_LOGGER is 'true'
@@ -70,32 +19,55 @@ tangile('Checking 1,2,3')
 
     Now = -> new Date().toJSON()
 
-    module.exports = logger = (name) ->
+    module.exports = logger = (default_name,suffix) ->
+
+      session = @session
 
 * session.dev_logger (boolean) whether to trace for this session
 
       make_debug = (e) =>
 
-        event = "report_#{e}"
-        if name?
-          _debug = Debug "#{name}:#{e}"
-        else
-          local_name = local_debug = null
+        local_name = default_name
+        full_name = local_name ? '(no name)'
+        full_name += ":#{suffix}" if suffix?
+        _debug = Debug "#{full_name}:#{e}"
+
+This is the actual logging function.
 
         (text,args...) =>
           [arg,extra...] = args
 
-          now = @session?.logger_stamp ? Now()
+          session = @session if @session?
 
-          host = @session?.logger_host ? default_host
+          now = Now()
+
+          host = session?.logger_host ? default_host
+
+          session_logger = session?.dev_logger
+
+If a default name is set, we should use it.
+Otherwise, we try to guess the current name based on the middleware's name. (This does not work well in async functions.)
+
+          if not default_name?
+            if local_name isnt @__middleware_name
+              local_name = @__middleware_name
+              full_name = local_name ? '(no name)'
+              full_name += ":#{suffix}" if suffix?
+              _debug = Debug "#{full_name}:#{e}"
 
           data =
             stamp: now
+            now: Date.now()
             host: host
-            session: @session?._id ? null
-            application: name
+            session: session?._id ? null
+            reference: session?.reference
+            application: default_name ? local_name
+            method: suffix
             event: e
             msg: text
+
+If the parameters are serializable, store them as-is.
+Otherwise store them as a string.
 
           if arg?
             try
@@ -113,58 +85,13 @@ tangile('Checking 1,2,3')
               data.extra_error = true
               data.extra = util.inspect extra
 
-Debug
+          w.emit 'debug', data
 
-          session_logger = @session?.dev_logger
+Debug
 
           if dev_logger or session_logger
             message = "#{now} #{host} #{text}"
-            if name?
-              _debug message, args...
-            else
-              if local_name isnt @__middleware_name
-                local_name = @__middleware_name ? '(no name)'
-                local_debug = Debug "#{local_name}:#{e}"
-              local_debug? message, args...
-
-Never do low-level traces over the network.
-
-          return if e is 'trace'
-
-Report via cuddly
-
-          if cuddly_io? and e in events
-            cuddly_io.emit event, data
-
-Report via gelf
-
-          if gelf_config?
-            message =
-              host: data.host
-              short_message: data.msg
-              facility: data.event
-              _stamp: data.stamp
-              _application_name: data.application
-
-            if data.data?
-              message._data     = data.data
-              if typeof message._data is 'object' and not message._data.length?
-                for own k,v of message._data when k.match /^[\w-]+$/
-                  message["_#{k}"] = v
-            message._extra    = data.extra    if data.extra?
-            message._session  = data.session  if data.session?
-            message._data_error  = data.data_error  if data.data_error?
-            message._extra_error = data.extra_error if data.extra_error?
-
-            request
-            .post gelf_config.url
-            .ca gelf_config.ca
-            .cert gelf_config.cert
-            .key gelf_config.key
-            .send message
-            .end (err,res) ->
-              if err or not res.ok
-                __debug 'Error', err
+            _debug message, args...
 
           return
 
@@ -190,29 +117,19 @@ and inject `@debug.catch`
 
       debug
 
-    process_logger = null
+    process_logger = logger 'process'
+    process.on 'uncaughtException', (error) ->
+      process_logger.error 'uncaughtException', error
+      throw error
 
-    module.exports.init = (cfg) ->
-      cuddly_url = cfg.cuddly_url if cfg.cuddly_url?
-      dev_logger = cfg.dev_logger if cfg.dev_logger?
-      gelf_config = cfg.gelf if cfg.gelf?
-      default_host = cfg.host if cfg.host?
+    process.on 'unhandledRejection', (reason,p) ->
+      process_logger.error "unhandledRejection on #{util.inspect p}", reason
+      # throw reason
 
-      cuddly_io ?= IO cuddly_url if cuddly_url?
-
-      return if process_logger?
-      process_logger ?= logger 'process'
-      process.on 'uncaughtException', (error) ->
-        process_logger.error 'uncaughtException', error
-        throw error
-
-      process.on 'unhandledRejection', (reason,p) ->
-        process_logger.error "unhandledRejection on #{util.inspect p}", reason
-        # throw reason
-
-      return
-
-    module.exports.enable = Debug.enable
-    module.exports.set_dev_logger = (value) ->
+    logger.enable = Debug.enable
+    logger.set_dev_logger = (value) ->
       dev_logger = value
-    module.exports.default_host = default_host
+    logger.default_host = default_host
+    logger.use = (plugin) ->
+      plugin w, logger
+      logger
