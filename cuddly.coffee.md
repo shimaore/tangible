@@ -3,9 +3,8 @@ Report via cuddly
 
     IO = require 'socket.io-client'
 
-    cuddly_url = process.env.CUDDLY_URL
-
     module.exports = plugin = (w) ->
+      cuddly_url = process.env.CUDDLY_URL
       return unless cuddly_url?
       cuddly_io = IO cuddly_url
 

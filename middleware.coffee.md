@@ -2,8 +2,8 @@
     .use require './cuddly'
     .use require './gelf'
     .use require './redis'
-    .use require './net'
 
+    net = require './net'
     repl = require './repl'
 
     Now = -> new Date().toJSON()
@@ -27,6 +27,7 @@ These are called only once per process.
 
     @server_pre = ->
       init @cfg
+      logger.use net
       logger.use repl this
       @debug = logger null, 'server_pre'
 

@@ -2,9 +2,8 @@
     net = require 'net'
 
     module.exports = plugin = (context) -> (w,logger) ->
-      return unless process.env.TANGIBLE_REPL_PORT? or process.env.TANGIBLE_REPL_IPC?
 
-      server = net.createServer (socket) ->
+      handler = (socket) ->
         r = repl.start
           prompt: "#{socket.remoteAddress}:#{socket.remotePort}→#{socket.localAddress}:#{socket.localPort} > "
           input: socket
@@ -24,9 +23,11 @@
         when process.env.TANGIBLE_REPL_PORT?
           port = parseInt process.env.TANGIBLE_REPL_PORT
           host = process.env.TANGIBLE_REPL_HOST
+          server = net.createServer handler
           server.listen port, host
         when process.env.TANGIBLE_REPL_IPC?
           ipc = process.env.TANGIBLE_REPL_IPC
+          server = net.createServer handler
           server.listen ipc
 
       return

@@ -2,20 +2,6 @@
     util = require 'util'
     debug = (require 'debug') 'tangible:net'
 
-    server = null
-
-    switch
-      when process.env.TANGIBLE_PORT?
-        server = net.createServer()
-        port = parseInt process.env.TANGIBLE_PORT
-        host = process.env.TANGIBLE_HOST
-        server.listen port, host
-
-      when  process.env.TANGIBLE_IPC?
-        server = net.createServer()
-        ipc = process.env.TANGIBLE_IPC
-        server.listen ipc
-
     format = (d) ->
       switch
         when not d?
@@ -26,7 +12,20 @@
           "#{JSON.stringify d}\n"
 
     module.exports = plugin = (w) ->
-      return unless server?
+      switch
+        when process.env.TANGIBLE_PORT?
+          server = net.createServer()
+          port = parseInt process.env.TANGIBLE_PORT
+          host = process.env.TANGIBLE_HOST
+          server.listen port, host
+
+        when  process.env.TANGIBLE_IPC?
+          server = net.createServer()
+          ipc = process.env.TANGIBLE_IPC
+          server.listen ipc
+
+        else
+          return
 
       server.on 'connection', (socket) ->
         ready = true

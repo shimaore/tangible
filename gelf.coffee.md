@@ -7,18 +7,17 @@ Report using GELF
 
     fs = require 'fs'
 
-    gelf_config = null
-    if process.env.GELF_URL?
-      map =
-        key: 'GELF_KEY'
-        cert: 'GELF_CERT'
-        ca: 'GELF_CA'
-      gelf_config =
-        url: process.env.GELF_URL
-      for k,n of map when n of process.env
-        gelf_config[k] = fs.readFileSync process.env[n]
-
     module.exports = plugin = (w) ->
+      if process.env.GELF_URL?
+        map =
+          key: 'GELF_KEY'
+          cert: 'GELF_CERT'
+          ca: 'GELF_CA'
+        gelf_config =
+          url: process.env.GELF_URL
+        for k,n of map when n of process.env
+          gelf_config[k] = fs.readFileSync process.env[n]
+
       return unless gelf_config?
 
       log = (data) ->
