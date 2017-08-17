@@ -10,7 +10,7 @@ Report via cuddly
       cuddly_io = IO cuddly_url
 
       log = (data) ->
-        cuddly_io.emit "report_#{event}", data
+        cuddly_io.emit "report_#{data.event}", data
 
       log_if = (data) ->
         if data.logging
