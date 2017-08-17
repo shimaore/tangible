@@ -9,11 +9,8 @@
 
   module.exports = plugin = function(context) {
     return function(w, logger) {
-      var host, ipc, port, server;
-      if (!((process.env.TANGIBLE_REPL_PORT != null) || (process.env.TANGIBLE_REPL_IPC != null))) {
-        return;
-      }
-      server = net.createServer(function(socket) {
+      var handler, host, ipc, port, server;
+      handler = function(socket) {
         var base, k, r, v;
         r = repl.start({
           prompt: socket.remoteAddress + ":" + socket.remotePort + "→" + socket.localAddress + ":" + socket.localPort + " > ",
@@ -35,15 +32,17 @@
             base[k] = v;
           }
         }
-      });
+      };
       switch (false) {
         case process.env.TANGIBLE_REPL_PORT == null:
           port = parseInt(process.env.TANGIBLE_REPL_PORT);
           host = process.env.TANGIBLE_REPL_HOST;
+          server = net.createServer(handler);
           server.listen(port, host);
           break;
         case process.env.TANGIBLE_REPL_IPC == null:
           ipc = process.env.TANGIBLE_REPL_IPC;
+          server = net.createServer(handler);
           server.listen(ipc);
       }
     };
