@@ -16,10 +16,18 @@
         else
           (data) -> JSON.stringify data
 
-      w.on 'debug', (data) ->
+      log = (data) ->
         client
-        .publish 'tangible:debug', encode data
+        .publish "tangible:#{data.event}", encode data
         .catch (error) ->
           debug "publish: #{error.stack}"
 
+      log_if = (data) ->
+        if data.logging
+          log data
+
+      w.on 'dev', log
+      w.on 'csr', log
+      w.on 'ops', log
+      w.on 'trace', log_if
       return

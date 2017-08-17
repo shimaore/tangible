@@ -55,6 +55,8 @@ Otherwise, we try to guess the current name based on the middleware's name. (Thi
               full_name += ":#{suffix}" if suffix?
               _debug = Debug "#{full_name}:#{e}"
 
+          logging = dev_logger or session_logger
+
           data =
             stamp: now
             now: Date.now()
@@ -65,6 +67,7 @@ Otherwise, we try to guess the current name based on the middleware's name. (Thi
             method: suffix
             event: e
             msg: text
+            logging: logging
 
 If the parameters are serializable, store them as-is.
 Otherwise store them as a string.
@@ -85,11 +88,11 @@ Otherwise store them as a string.
               data.extra_error = true
               data.extra = util.inspect extra
 
-          w.emit 'debug', data
+          w.emit e, data
 
 Debug
 
-          if dev_logger or session_logger
+          if logging
             message = "#{now} #{host} #{text}"
             _debug message, args...
 

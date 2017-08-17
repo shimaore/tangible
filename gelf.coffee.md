@@ -21,9 +21,7 @@ Report using GELF
     module.exports = plugin = (w) ->
       return unless gelf_config?
 
-      w.on 'debug', (data) ->
-        return if data.event is 'trace'
-
+      log = (data) ->
         message =
           host: data.host
           short_message: data.msg
@@ -50,7 +48,14 @@ Report using GELF
         .end (err,res) ->
           if err or not res.ok
             debug 'Error', err
-
         return
 
+      log_if = (data) ->
+        if data.logging
+          log.data
+
+      w.on 'dev', log
+      w.on 'ops', log
+      w.on 'csr', log_if
+      # do not log trace
       return

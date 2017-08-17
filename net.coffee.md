@@ -31,7 +31,7 @@
         ready = true
         missed = 0
 
-        w.on 'debug', (data) ->
+        log = (data) ->
           if not ready
             missed++
             return
@@ -55,3 +55,13 @@
             ready = true
 
           return
+
+        log_if = (data) ->
+          if data.logging
+            log data
+
+        w.on 'dev', log
+        w.on 'ops', log
+        w.on 'csr', log
+        w.on 'trace', log_if
+        return
