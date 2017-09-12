@@ -3,6 +3,7 @@ We support logging using debug (console), socket.io (our own), or GELF over TLS.
     Debug = require 'debug'
     __debug = Debug 'tangible'
     util = require 'util'
+    seem = require 'seem'
 
     EventEmitter = require 'events'
 
@@ -117,6 +118,24 @@ and inject `@debug.catch`
       debug.catch = (msg) ->
         (error) ->
           debug.error msg, error
+
+`heal` is used to catch-and-log promises rejections (async).
+
+      heal = (p) -> p.catch debug.catch 'Catched'
+
+`hand` is used to wrap event handlers generators (use it instead of `seem` to log errors).
+
+      hand = (f) ->
+        F = seem f
+        (args...) -> heal F args...
+
+Include itself so that we can do `{debug,heal,hand} = (require 'tangible') 'name'`.
+
+      debug.heal = heal
+      debug.hand = hand
+      debug.debug = debug
+
+      debug.events = w
 
       debug
 

@@ -51,3 +51,34 @@
       it 'should log unhandled rejection', ->
         Promise.reject new Error 'on purpose'
         return
+
+      it 'should log errors', ->
+        new Promise (resolve) ->
+          debug = (require '..') 'me'
+          debug.events.on 'dev', resolve
+          debug.dev 'Logging'
+
+      it 'should catch errors', ->
+        new Promise (resolve) ->
+          debug = (require '..') 'me'
+          debug.events.on 'dev', resolve
+          Promise
+            .reject new Error 'on purpose'
+            .catch debug.catch 'Catching'
+
+      it 'should provide heal', ->
+        new Promise (resolve) ->
+          {heal,debug} = (require '..') 'me'
+          debug.events.on 'dev', resolve
+          heal Promise.reject new Error 'on purpose'
+
+      it 'should provide hand', ->
+        new Promise (resolve) ->
+          {hand,debug} = (require '..') 'me'
+          debug.events.on 'dev', resolve
+          EventEmitter = require 'events'
+          ev = new EventEmitter()
+          ev.once 'booh', hand ->
+            yield 0
+            throw new Error 'on purpose'
+          ev.emit 'booh'
