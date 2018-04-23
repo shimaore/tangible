@@ -121,7 +121,7 @@ and inject `@debug.catch`
 
 `heal` is used to catch-and-log promises rejections (async).
 
-      heal = (p) -> p.catch debug.catch 'Catched'
+      heal = (p) -> p.catch debug.catch '(caught/ignored)'
 
 `hand` is used to wrap event handlers generators (use it instead of `seem` to log errors).
 
