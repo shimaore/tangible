@@ -125,7 +125,7 @@
       };
     };
     heal = function(p) {
-      return p["catch"](debug["catch"]('Catched'));
+      return p["catch"](debug["catch"]('(caught/ignored)'));
     };
     hand = function(f) {
       var F;
