@@ -1,6 +1,6 @@
 {
   "name": "tangible",
-  "version": "1.9.1",
+  "version": "2.0.0",
   "description": "logging for CCNQ",
   "main": "index.js",
   "directories": {
