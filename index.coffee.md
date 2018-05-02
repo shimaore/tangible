@@ -126,13 +126,18 @@ and inject `@debug.catch`
 `hand` is used to wrap event handlers generators (use it instead of `seem` to log errors).
 
       hand = (f) ->
-        F = seem f
-        (args...) -> heal F args...
+        foot seem f
+
+`foot` is used to wrap async event handlers.
+
+      foot = (f) ->
+        (args...) -> heal f args...
 
 Include itself so that we can do `{debug,heal,hand} = (require 'tangible') 'name'`.
 
       debug.heal = heal
       debug.hand = hand
+      debug.foot = foot
       debug.debug = debug
 
       debug.events = w

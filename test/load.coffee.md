@@ -82,3 +82,14 @@
             yield 0
             throw new Error 'on purpose'
           ev.emit 'booh'
+
+      it 'should provide foot', ->
+        new Promise (resolve) ->
+          {foot,debug} = (require '..') 'me'
+          debug.events.on 'dev', resolve
+          EventEmitter = require 'events'
+          ev = new EventEmitter()
+          ev.once 'booh', foot ->
+            await 0
+            throw new Error 'on purpose'
+          ev.emit 'booh'

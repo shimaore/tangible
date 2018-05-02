@@ -8,7 +8,7 @@
   },
   "scripts": {
     "prepublish": "coffee -c *.coffee.md",
-    "pretest": "npm install",
+    "pretest": "npm install && rm package-lock.json && coffee -c test/*.coffee.md",
     "test": "mocha"
   },
   "author": "Stéphane Alnet <stephane@shimaore.net> (https://stephane.shimaore.net/)",
@@ -23,8 +23,7 @@
   ],
   "devDependencies": {
     "chai": "^4.1.1",
-    "coffee-coverage": "^2.0.1",
-    "coffee-script": "^1.12.7",
+    "coffeescript": "^2.3.0",
     "mocha": "^3.5.0"
   },
   "dependencies": {
