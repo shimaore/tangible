@@ -7,8 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "prepublish": "coffee -c *.coffee.md",
-    "pretest": "npm install && rm package-lock.json && coffee -c test/*.coffee.md",
+    "prepublishOnly": "npm run build",
+    "build": "npm install --only=dev && rm package-lock.json && coffee -c *.coffee.md",
+    "pretest": "npm run build && coffee -c test/*.coffee.md",
     "test": "mocha"
   },
   "author": "Stéphane Alnet <stephane@shimaore.net> (https://stephane.shimaore.net/)",
@@ -24,15 +25,10 @@
   "devDependencies": {
     "chai": "^4.1.1",
     "coffeescript": "^2.3.0",
-    "mocha": "^3.5.0"
+    "mocha": "^5.2.0"
   },
   "dependencies": {
-    "debug": "^3.0.0",
-    "ioredis": "^3.1.4",
-    "notepack.io": "^2.1.1",
-    "seem": "^2.0.0",
-    "socket.io-client": "^2.0.3",
-    "superagent": "^3.5.2",
-    "uuid": "^3.1.0"
+    "debug": "^4.1.0",
+    "eventemitter2": "^5.0.1"
   }
 }

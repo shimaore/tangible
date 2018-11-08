@@ -1,101 +1,56 @@
-We support logging using debug (console), socket.io (our own), or GELF over TLS.
-
     Debug = require 'debug'
-    __debug = Debug 'tangible'
-    util = require 'util'
-    seem = require 'seem'
+    {inspect,debuglog} = require 'util'
 
-    EventEmitter = require 'events'
+    {EventEmitter2} = require 'eventemitter2'
 
-    w = new EventEmitter()
+    w = new EventEmitter2
+      wildcard: true
+      delimiter: ':'
+      verboseMemoryLeak: true
 
     events = ['dev','ops','csr']
 
     os = require 'os'
-    default_host = process.env.CUDDLY_HOST ? os.hostname()
+    host = process.env.TANGIBLE_HOST ? os.hostname()
 
-    dev_logger = process.env.NODE_ENV isnt 'production'
-    dev_logger = true  if process.env.DEV_LOGGER is 'true'
-    dev_logger = false if process.env.DEV_LOGGER is 'false'
+    module.exports = logger = (name) ->
 
-    Now = -> new Date().toJSON()
+      make_debug = (e) ->
 
-    module.exports = logger = (default_name,suffix) ->
+        full_name = "#{name}:#{e}"
 
-      session = @session
-
-* session.dev_logger (boolean) whether to trace for this session
-
-      make_debug = (e) =>
-
-        local_name = default_name
-        full_name = local_name ? '(no name)'
-        full_name += ":#{suffix}" if suffix?
-        _debug = Debug "#{full_name}:#{e}"
+        _debug = Debug full_name
+        _debuglog = debuglog full_name
 
 This is the actual logging function.
 
-        (text,args...) =>
-          [arg,extra...] = args
+        (text,args...) ->
+          _debug text, args...
+          _debuglog text, args...
 
-          session = @session if @session?
+          return unless w.listenerCount full_name
 
-          now = Now()
-
-          host = session?.logger_host ? default_host
-
-          session_logger = session?.dev_logger
-
-If a default name is set, we should use it.
-Otherwise, we try to guess the current name based on the middleware's name. (This does not work well in async functions.)
-
-          if not default_name?
-            if local_name isnt @__middleware_name
-              local_name = @__middleware_name
-              full_name = local_name ? '(no name)'
-              full_name += ":#{suffix}" if suffix?
-              _debug = Debug "#{full_name}:#{e}"
-
-          logging = dev_logger or session_logger
+          now = Date.now()
 
           data =
-            stamp: now
-            now: Date.now()
+            stamp: new Date(now).toJSON()
+            now: now
             host: host
-            session: session?._id ? null
-            reference: session?.reference
-            application: default_name ? local_name
-            method: suffix
+            application: name
             event: e
             msg: text
-            logging: logging
 
 If the parameters are serializable, store them as-is.
 Otherwise store them as a string.
 
-          if arg?
-            try
-              JSON.stringify arg
-              data.data = arg
-            catch error
-              data.data_error = true
-              data.data = util.inspect arg
+          try
+            JSON.stringify args
+            data.data = args
+          catch error
+            data.data_error = true
+            data.data = logger.inspect args
 
-          if extra.length > 0
-            try
-              JSON.stringify extra
-              data.extra = extra
-            catch error
-              data.extra_error = true
-              data.extra = util.inspect extra
-
-          w.emit e, data
-
-Debug
-
-          if logging
-            message = "#{now} #{host} #{text}"
-            _debug message, args...
+          w.emit full_name, data
 
           return
 
@@ -110,10 +65,8 @@ and inject `@debug.dev`, `@debug.ops`, `@debug.csr`.
 
 and inject `@debug.catch`
 
-      debug.inspect = util.inspect
-
       debug.error = (msg,error) ->
-        debug.dev "#{msg}: #{error.stack ? debug.inspect error}"
+        debug.dev "#{msg}: #{error.stack ? logger.inspect error}"
 
       debug.catch = (msg) ->
         (error) ->
@@ -121,26 +74,25 @@ and inject `@debug.catch`
 
 `heal` is used to catch-and-log promises rejections (async).
 
-      heal = (p) -> p.catch debug.catch '(caught/ignored)'
-
-`hand` is used to wrap event handlers generators (use it instead of `seem` to log errors).
-
-      hand = (f) ->
-        foot seem f
+      heal = (t,p=null) ->
+        if not p?
+          t.catch debug.catch '(caught/ignored)'
+        else
+          p.catch debug.catch t
 
 `foot` is used to wrap async event handlers.
 
-      foot = (f) ->
-        (args...) -> heal f args...
+      foot = (t,f=null) ->
+        if not f?
+          (args...) -> heal t args...
+        else
+          (args...) -> heal t, f args...
 
 Include itself so that we can do `{debug,heal,hand} = (require 'tangible') 'name'`.
 
       debug.heal = heal
-      debug.hand = hand
       debug.foot = foot
       debug.debug = debug
-
-      debug.events = w
 
       debug
 
@@ -150,13 +102,11 @@ Include itself so that we can do `{debug,heal,hand} = (require 'tangible') 'name
       throw error
 
     process.on 'unhandledRejection', (reason,p) ->
-      process_logger.error "unhandledRejection on #{util.inspect p}", reason
+      process_logger.error "unhandledRejection on #{logger.inspect p}", reason
       # throw reason
 
-    logger.enable = Debug.enable
-    logger.set_dev_logger = (value) ->
-      dev_logger = value
-    logger.default_host = default_host
+    logger.inspect = inspect
+    logger.events = w
     logger.use = (plugin) ->
-      plugin w, logger
+      plugin logger
       logger

@@ -1,7 +1,5 @@
 devops logging for CCNQ
 
-Same semantics as in `cuddly`:
-
 Development/devops support messages
 -----------------------------------
 
