@@ -99,11 +99,11 @@ Include itself so that we can do `{debug,heal,hand} = (require 'tangible') 'name
     process_logger = logger 'process'
     process.on 'uncaughtException', (error) ->
       process_logger.error 'uncaughtException', error
-      throw error
+      process.exit 2
 
     process.on 'unhandledRejection', (reason,p) ->
       process_logger.error "unhandledRejection on #{logger.inspect p}", reason
-      # throw reason
+      process.exit 2 if process.env.EXIT_ON_UNHANDLED_REJECTION is 'yes'
 
     logger.inspect = inspect
     logger.events = w
